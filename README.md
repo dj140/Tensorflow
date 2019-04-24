@@ -105,7 +105,9 @@ Download cuDNN 4.0, adding it's contents to your CUDA director <br>
 
 	protoc object_detection/protos/*.proto --python_out=.
 	export PYTHONPATH=$PYTHONPATH:`pwd`:`pwd`/slim
-可以把环境变量写入bashrc文件里，这样就不需要每次都添加了
+
+可以把环境变量写入bashrc文件里，这样就不需要每次都添加了<br>
+
 	echo "export PYTHONPATH=$PYTHONPATH=/home/username/models/research:home/username/models/slim">> ~/.bashrc
 
 If you get an error on the protoc command on Ubuntu, check the version you are running with protoc --version, <br>
