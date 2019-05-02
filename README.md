@@ -158,6 +158,7 @@ bazel源码没有在外层目录打包，unzip的时候先建一个文件夹把�
 
 执行./configure后，若报无法下载xx包的错误，bazel源码src/main/cpp/blaze.cc
 第1256行，忽略代理
+
 	static void PrepareEnvironmentForJvm() {
 	  if (!blaze::GetEnv("http_proxy").empty()) {
 		PrintWarning("ignoring http_proxy in environment.");
