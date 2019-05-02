@@ -6,7 +6,9 @@ cpu:intel-i5-7200u <br>
 gpu:NVIDIA GEFORCE 920MX <br>
 
 ## Install Tensorflow GPU
-	
+
+	确定要安装的版本，选择不同的包，如下图所示：
+[image](https://github.com/dj140/Tensorflow-install-tutorial/blob/master/images/Screenshot%20from%202019-04-21%2020-42-12.png)
 	Frist you need an NVIDIA GPU with a compute capability > 3.0.
 	
 	There are threes major steps that need to be taken, in order for all of this to work.
@@ -103,6 +105,8 @@ Download cuDNN 4.0, adding it's contents to your CUDA director <br>
 
 	https://github.com/lhelontra/tensorflow-on-arm/releases
 
+确定安装版本，如下图：
+[image](https://github.com/dj140/Tensorflow-install-tutorial/blob/master/images/Screenshot%20from%202019-05-02%2023-39-21.png)
 ## 在arm版上编译安装Tensorflow(python3)
 
 ## 安装相关依赖(pyhton,pip,bazel)
