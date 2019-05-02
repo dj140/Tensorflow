@@ -207,12 +207,24 @@ bazel源码没有在外层目录打包，unzip的时候先建一个文件夹把�
 	
 	cd ~/tensorflow
 	./configure
-
+	
+	Please specify the location of python. [Default is /usr/bin/python]:
+	/usr/bin/python3 # 填写系统中python安装位置，python2.7默认回车，python3需对其手动输入以作修改
+	Please input the desired Python library path to use. Default is [/usr/local/lib/python2.7/dist-packages]:
+	/usr/local/lib/python3/dist-packages # 同上，2.7可回车默认
+	其他选项无默认需求，都选n。
+	
 编译
 	
 	bazel build -c opt --copt="-funsafe-math-optimizations" --copt="-ftree-vectorize" --copt="-fomit-frame-pointer" --local_resources 1024,1.0,1.0 --verbose_failures tensorflow/tools/pip_package:build_pip_package
 
 如果过程中出现问题，需要重新执行上述语句，需要先执行bazel clean!
+
+	$ bazel build -c opt //tensorflow/tools/pip_package:build_pip_package
+	
+#若cpu不支持avx而支持sse指令集，使用如下命令
+
+	$ bazel build -c opt --copt=-msse4.1 --copt=-msse4.2 //tensorflow/tools/pip_package:build_pip_package
 
 n小时后，若出现下面信息则编译完成
 
