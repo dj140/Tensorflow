@@ -1,5 +1,10 @@
 # Tensorflow-install-tutorial
 
+相关环境：<br>
+笔记本asus A441U <br>
+cpu:intel-i5-7200u <br>
+gpu:NVIDIA GEFORCE 920MX <br>
+
 ## Install Tensorflow GPU
 	
 	Frist you need an NVIDIA GPU with a compute capability > 3.0.
@@ -91,7 +96,140 @@ Download cuDNN 4.0, adding it's contents to your CUDA director <br>
 	sudo pip3 install tensorflow
 
 ## 源码编译安装Tensorflow，适合多个平台运行
-	
-	
 
+若需要在树莓派上安装，官网有详细[安装教程](https://www.tensorflow.org/install/source_rpi)
+
+## 在arm版上编译安装Tensorflow(python3)
+
+## 安装相关依赖(pyhton,pip,bazel)
+
+	sudo apt install python3-dev python3-pip
+	pip3 install -U --user pip six numpy wheel setuptools mock
+	pip3 install -U --user keras_applications==1.0.6 --no-deps
+	pip3 install -U --user keras_preprocessing==1.0.5 --no-deps
+	sudo apt-get install build-essential openjdk-8-jdk python zip unzip
+
+## 安装Bazel
+
+从github里下载bazel源码，注意要下载dist版本的，bazel的版本和你安装tensorflow的版本也要对应，官网有相应的表格
+
+Download bazel-<version>-dist.zip from[Github] (https://github.com/bazelbuild/bazel/releases),for example bazel-0.19.2-dist.zip.
+
+bazel源码没有在外层目录打包，unzip的时候先建一个文件夹把源码发进去在解压
+	
+	mkdir bazel-0.19.2
+	mv bazel-0.19.2-dist.zip ./bazel-0.19.2
+	cd bazel-0.19.2
+	unzip bazel-0.19.2.zip
+
+接下来修改/scripts/bootstrap/compile.sh文件，否则执行compile.sh时Java会内存溢出
+
+	vim scripts/bootstrap/compile.sh
+
+将第122行修改成
+
+	run "${JAVAC}" -J-Xms256m -J-Xmx384m -classpath "${classpath}" -sourcepath "${sourcepath}"
+
+若执行后还是内存溢出则加多一级 –J-Xms512m
+
+	run "${JAVAC}" -J-Xms256m -J-Xmx384m –J-Xms512m -classpath "${classpath}" -sourcepath "${sourcepath}
+	
+改完后执行.compile.sh
+	
+	cd ~/bazel-0.19.2
+	./compile.sh
+
+完成之后将生成的文件copy到/usr/local/bin
+
+	cp output/bazel /usr/local/bin/bazel
+
+测试
+
+	bazel version
+
+## 下载tensorflow源码
+
+	git clone https://github.com/tensorflow/tensorflow.git
+
+代码库默认为 master 开发分支。您也可以检出要编译的版本分支：
+    git checkout branch_name  # r1.9, r1.10, etc.
+
+	cd tensorflow
+
+执行./configure后，若报无法下载xx包的错误，bazel源码src/main/cpp/blaze.cc
+第1256行，忽略代理
+	static void PrepareEnvironmentForJvm() {
+	  if (!blaze::GetEnv("http_proxy").empty()) {
+		PrintWarning("ignoring http_proxy in environment.");
+		blaze::UnsetEnv("http_proxy");
+		}
+	}
+
+解决方法打开chrome下载这两个网址的证书
+
+	http://mirror.bazel.build/
+	https://github.com/
+
+保存为bazel.build.cer  github.com.cer
+
+	cd /usr/lib/jvm/java-1.8.0-openjdk-armhf/jre/lib/security/
+
+执行keytool需要输入密码，默认密码为changeit
+
+	keytool -import -alias bazel.build  -keystore cacerts -file ./bazel.build.cer -trustcacerts
+	keytool -import -alias github.com  -keystore cacerts -file ./github.com.cer -trustcacerts
+
+修改tensorflow/core/platform/platform.h
+
+	vim tensorflow/core/platform/platform.h
+
+第48行
+
+	#elif defined(_WIN32)
+	#define PLATFORM_WINDOWS
+
+	#elif defined(__arm__)
+	#define PLATFORM_POSIX
+
+	// Require an outside macro to tell us if we're building for Raspberry Pi.
+	#if !defined(RASPBERRY_PI)
+	#define IS_MOBILE_PLATFORM   //就是这行
+	#endif  // !defined(RASPBERRY_PI)
+
+	#else
+	// If no platform specified, use:
+	#define PLATFORM_POSIX
+
+针对树莓派做了特殊判断，不是树莓派的设备一律按移动设备处理。所以把这句改成#define PLATFORM_POSIX，保存退出。
+
+执行./configure
+	
+	cd ~/tensorflow
+	./configure
+
+编译
+	
+	bazel build -c opt --copt="-funsafe-math-optimizations" --copt="-ftree-vectorize" --copt="-fomit-frame-pointer" --local_resources 1024,1.0,1.0 --verbose_failures tensorflow/tools/pip_package:build_pip_package
+
+如果过程中出现问题，需要重新执行上述语句，需要先执行bazel clean!
+
+n小时后，若出现下面信息则编译完成
+
+	Target //tensorflow/tools/pip_package:build_pip_package up-to-date:
+	bazel-bin/tensorflow/tools/pip_package/build_pip_package
+
+接着来执行
+	
+	bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg
+
+这时将会把用于pip安装的whl文件生成到/tmp/tensorflow_pkg目录
+
+	sudo pip3 install /tmp/tensorflow_pkg/xxxxx.whl
+	sudo ldconfig
+
+测试
+ 
+	python3
+	import tensorflow as tf
+	tf.__version__
 
