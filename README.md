@@ -99,6 +99,10 @@ Download cuDNN 4.0, adding it's contents to your CUDA director <br>
 
 若需要在树莓派上安装，官网有详细[安装教程](https://www.tensorflow.org/install/source_rpi)
 
+不想从源码编译安装可以试一下别人编译好的
+
+	https://github.com/lhelontra/tensorflow-on-arm/releases
+
 ## 在arm版上编译安装Tensorflow(python3)
 
 ## 安装相关依赖(pyhton,pip,bazel)
