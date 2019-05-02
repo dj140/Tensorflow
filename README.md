@@ -95,7 +95,7 @@ Download cuDNN 4.0, adding it's contents to your CUDA director <br>
 
 	sudo pip3 install tensorflow
 
-## 源码编译安装Tensorflow，适合多个平台运行
+# 源码编译安装Tensorflow，适合多个平台运行
 
 若需要在树莓派上安装，官网有详细[安装教程](https://www.tensorflow.org/install/source_rpi)
 
@@ -233,3 +233,10 @@ n小时后，若出现下面信息则编译完成
 	import tensorflow as tf
 	tf.__version__
 
+参考链接：
+
+https://github.com/bazelbuild/bazel/issues/1308
+https://github.com/bazelbuild/bazel/releases
+https://www.tensorflow.org/install/source
+https://veevv.com/2017/12/12/how-to-install-tensorflow-on-arm/#
+https://docs.bazel.build/versions/master/install-compile-source.html
